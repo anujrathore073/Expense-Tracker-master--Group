@@ -1,0 +1,18 @@
+{% extends 'layout.html' %} {% block body %}
+<div class="login container text-white">
+	{% from "includes/_formhelpers.html" import render_field %}
+	<form action="" method="post">
+		<div class="green-text form-group mt-5">
+			{{render_field(form.username, class_="form-control")}}
+		</div>
+		<div class="green-text form-group">
+			{{render_field(form.password, class_="form-control")}}
+		</div>
+		<div class="enter">
+		<input class="btn btn-info submit" type="submit" value="Login" />
+		<h5 class="forgot"><a href="{{ url_for('reset_request') }}" class="green-text link">Forgot Password?</a></h5>
+		</div>
+	</form>
+	<p class="account">Don't have an account? <a class="green-text hover" href="/signup"> SignUp</a></p>
+</div>
+{% endblock %}

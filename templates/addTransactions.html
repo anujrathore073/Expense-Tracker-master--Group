@@ -1,0 +1,117 @@
+{% extends 'layout.html' %} {% block body %}
+<div class="add">
+	<h2 class="text-light">Add Transactions</h2>
+	{% from "includes/_formhelpers.html" import render_field %}
+	<form class="form" method="POST" action="">
+		<div class="form-group row">
+			<div class="form-group col-md-6">
+				<input
+					type="number"
+					placeholder="Enter Amount"
+					class="form-control"
+					name="amount"
+					value="{{request.form.amount}}"
+				/>
+			</div>
+			<div class="form-group category col-md-6">
+				<select name="category" id="category" class="form-control">
+					<option value="Miscellaneous" selected="selected">Select Category</option>
+					<option value="Miscellaneous">Miscellaneous</option>
+					<option value="Food">Food</option>
+					<option value="Transportation">Transportation</option>
+					<option value="Groceries">Groceries</option>
+					<option value="Clothing">Clothing</option>
+					<option value="HouseHold">HouseHold</option>
+					<option value="Rent">Rent</option>
+					<option value="Bills and Taxes">Bills and Taxes</option>
+					<option value="Vacations">Vacations</option>
+				</select>
+			</div>
+			<div class="form-group col-md-10 col-lg-11">
+				<input
+					type="text"
+					placeholder="Enter Description"
+					name="description"
+					class="form-control"
+					value="{{request.form.description}}"
+				/>
+			</div>
+			<div class="form-group col-md-2 col-lg-1 btn">
+				<button type="submit" class="btn btn-primary">Add</button>
+			</div>
+		</div>
+	</form>
+	{% if result != 0%}
+	<div class="current-month">
+		<h4 class="text-light float-left">
+			Expenses Made This Month = <span class="green-text expense">₹ {{totalExpenses}}</span>
+		</h4>
+		<p class="text-light float-left swipe">Swipe to Edit/Delete</p>
+		<a href="category" class="btn btn-warning pie_chart float-right">Category Pie Chart</a>
+		<a href="yearly_bar" class="btn btn-warning bar_chart float-right">Comparison Bar Chart</a>
+		<a href="daily_line" class="btn btn-warning line_chart float-right">Daily Line Chart</a>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-striped text-light">
+			<tr>
+				<th>Date</th>
+				<th>Amount</th>
+				<th>Category</th>
+				<th>Description</th>
+				<th></th>
+				<th></th>
+			</tr>
+			{% for transaction in transactions %}
+			<tr>
+				<td>{{transaction.date}}</td>
+				<td>{{transaction.amount}}</td>
+				<td>{{transaction.category}}</td>
+				<td>{{transaction.description}}</td>
+				<td><a href="editCurrentMonthTransaction/{{transaction.id}}" class="btn btn-primary pull-right">Edit</a></td>
+				<td>
+					<button
+						type="button"
+						class="btn btn-danger delete-transaction"
+						data-toggle="modal"
+						data-target="#exampleModalCenter"
+						data-id="{{transaction.id}}"
+						data-url="{{url_for('deleteCurrentMonthTransaction', id=transaction.id)}}"
+					>
+						Delete
+					</button>
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+	<div
+		class="modal fade"
+		id="exampleModalCenter"
+		tabindex="-1"
+		role="dialog"
+		aria-labelledby="exampleModalCenterTitle"
+		aria-hidden="true"
+	>
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLongTitle">Confirmation</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Are you sure you want to delete this transaction?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<form class="modal-form" method="POST">
+						<input type="hidden" name="_method" value="DELETE" />
+						<input type="submit" value="Delete" class="btn btn-danger" />
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{%endif%} {% endblock %}
