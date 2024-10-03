@@ -10,6 +10,7 @@ from wtforms.fields import EmailField
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Mail, Message
 import plotly.graph_objects as go
+from flask import Flask
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_pyfile('config.py')
@@ -68,6 +69,11 @@ def signup():
             return redirect(url_for('login'))
     return render_template('signUp.html', form=form)
 
+
+
+@app.route('/daily_line')
+def daily_line():
+    return "This is the daily line page."
 
 class LoginForm(Form):
     username = StringField('Username', [validators.Length(min=4, max=100)])
