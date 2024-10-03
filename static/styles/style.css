@@ -189,6 +189,34 @@
 	color: #bada55;
 }
 
+
+.team .card-3 {
+    max-width: 540px;
+    height: 350px;
+    background-color: #d9d9d9;
+    border: 5px solid #bada55;
+}
+
+.team .card-3 img {
+    height: 341px;
+    width: 267px; /* Adjust this to match the aspect ratio of the image you plan to use */
+}
+
+.team .card-3 .card-text {
+    font-size: 17px;
+}
+
+.team .card-3 .card-body ul {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid #212529;
+}
+
+.team .card-3 .card-body ul li i {
+    font-size: 30px;
+}
+
 @media only screen and (max-width: 500px) {
 	.history .select-list .month {
 		margin-left: 0px;
