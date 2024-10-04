@@ -10,7 +10,6 @@ from wtforms.fields import EmailField
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Mail, Message
 import plotly.graph_objects as go
-from flask import Flask
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_pyfile('config.py')
@@ -53,8 +52,8 @@ def signup():
         last_name = form.last_name.data
         email = form.email.data
         username = form.username.data
-        password = sha256_crypt.encrypt(str(form.password.data))
-
+        password = sha256_crypt.hash(str(form.password.data))
+   
         cur = mysql.connection.cursor()
         result = cur.execute("SELECT * FROM users WHERE email=%s", [email])
         if result > 0:
@@ -69,11 +68,6 @@ def signup():
             return redirect(url_for('login'))
     return render_template('signUp.html', form=form)
 
-
-
-@app.route('/daily_line')
-def daily_line():
-    return "This is the daily line page."
 
 class LoginForm(Form):
     username = StringField('Username', [validators.Length(min=4, max=100)])
@@ -405,85 +399,6 @@ def deleteCurrentMonthTransaction(id):
     flash('Transaction Deleted', 'success')
 
     return redirect(url_for('addTransactions'))
-
-
-class RequestResetForm(Form):
-    email = EmailField('Email address', [
-                       validators.DataRequired(), validators.Email()])
-
-
-@app.route("/reset_request", methods=['GET', 'POST'])
-def reset_request():
-    if 'logged_in' in session and session['logged_in'] == True:
-        flash('You are already logged in', 'info')
-        return redirect(url_for('index'))
-    form = RequestResetForm(request.form)
-    if request.method == 'POST' and form.validate():
-        email = form.email.data
-        cur = mysql.connection.cursor()
-        result = cur.execute(
-            "SELECT id,username,email FROM users WHERE email = %s", [email])
-        if result == 0:
-            flash(
-                'There is no account with that email. You must register first.', 'warning')
-            return redirect(url_for('signup'))
-        else:
-            data = cur.fetchone()
-            user_id = data['id']
-            user_email = data['email']
-            cur.close()
-            s = Serializer(app.config['SECRET_KEY'], 1800)
-            token = s.dumps({'user_id': user_id}).decode('utf-8')
-            msg = Message('Password Reset Request',
-                          sender='noreply@demo.com', recipients=[user_email])
-            msg.body = f'''To reset your password, visit the following link:
-{url_for('reset_token', token=token, _external=True)}
-If you did not make password reset request then simply ignore this email and no changes will be made.
-Note:This link is valid only for 30 mins from the time you requested a password change request.
-'''
-            mail.send(msg)
-            flash(
-                'An email has been sent with instructions to reset your password.', 'info')
-            return redirect(url_for('login'))
-    return render_template('reset_request.html', form=form)
-
-
-class ResetPasswordForm(Form):
-    password = PasswordField('Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords do not match')
-    ])
-    confirm = PasswordField('Confirm Password')
-
-
-@app.route("/reset_password/<token>", methods=['GET', 'POST'])
-def reset_token(token):
-    if 'logged_in' in session and session['logged_in'] == True:
-        flash('You are already logged in', 'info')
-        return redirect(url_for('index'))
-    s = Serializer(app.config['SECRET_KEY'])
-    try:
-        user_id = s.loads(token)['user_id']
-    except:
-        flash('That is an invalid or expired token', 'warning')
-        return redirect(url_for('reset_request'))
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT id FROM users WHERE id = %s", [user_id])
-    data = cur.fetchone()
-    cur.close()
-    user_id = data['id']
-    form = ResetPasswordForm(request.form)
-    if request.method == 'POST' and form.validate():
-        password = sha256_crypt.encrypt(str(form.password.data))
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "UPDATE users SET password = %s WHERE id = %s", (password, user_id))
-        mysql.connection.commit()
-        cur.close()
-        flash('Your password has been updated! You are now able to log in', 'success')
-        return redirect(url_for('login'))
-    return render_template('reset_token.html', title='Reset Password', form=form)
-
 # Category Wise Pie Chart For Current Year As Percentage #
 @app.route('/category')
 def createBarCharts():

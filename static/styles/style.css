@@ -152,10 +152,6 @@
 	font-size: 1.2rem;
 }
 
-.login .enter .forgot .link:hover{
-	color: #bada55;
-}
-
 .login .account {
 	display: flex;
 	flex-direction: row;
