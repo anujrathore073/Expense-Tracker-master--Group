@@ -15,7 +15,7 @@ app.config.from_pyfile('config.py')
 
 mysql = MySQL(app)
 
-
+app.run(host='0.0.0.0', port=5000)
 
 @app.route('/')
 def index():
