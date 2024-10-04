@@ -7,7 +7,7 @@ from functools import wraps
 import timeago
 import datetime
 from wtforms.fields import EmailField
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import URLSafeTimedSerializer as Serializer
 import plotly.graph_objects as go
 
 app = Flask(__name__, static_url_path='/static')
