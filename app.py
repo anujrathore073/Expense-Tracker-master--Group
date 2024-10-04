@@ -8,14 +8,13 @@ import timeago
 import datetime
 from wtforms.fields import EmailField
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask_mail import Mail, Message
 import plotly.graph_objects as go
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_pyfile('config.py')
 
 mysql = MySQL(app)
-mail = Mail(app)
+
 
 
 @app.route('/')
